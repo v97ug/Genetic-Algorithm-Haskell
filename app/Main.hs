@@ -1,7 +1,6 @@
 module Main where
 
 
---import System.Random.Shuffle
 import Shuffle (shuffleM)
 import Control.Monad (liftM)
 import Data.Time.Clock
@@ -13,10 +12,10 @@ import TSP
 
 generationNum = 100
 
-inputPath :: IO [Coord]
+inputPath :: IO (Vector Coord)
 inputPath = do
   contents <- getContents
-  return $ toCoord . words <$> lines contents
+  return $ fromList $ toCoord . words <$> lines contents
     where
       toCoord :: [String] -> Coord
       toCoord [s1, s2] = Coord (read s1, read s2)
@@ -28,7 +27,7 @@ main = do
 
   coords <- inputPath
 
-  paths <- replicateM poolSize $ Path <$> shuffleM (fromList coords)
+  paths <- replicateM poolSize $ Path <$> shuffleM coords
   elite <- geneticLoop generationNum paths (head paths)
 
   print $ totalCost elite
